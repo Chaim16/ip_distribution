@@ -10,7 +10,6 @@ from ip_distribution.utils.exception_util import BusinessException, ParamsExcept
 from ip_distribution.utils.log_util import get_logger
 from ip_distribution.utils.response import setResult
 from ip_distribution.utils.validate import TransCoding
-from distribution.service.alipay_model import AlipayModel
 from distribution.service.user_model import UserModel
 from distribution.view.serilazer import RegisterSerializer, UserModifySerializer, ApplyAsDesignerSerializer, \
     RechargeSerializer, ApproveDesignerApplicationSerializer, UserDeleteSerializer

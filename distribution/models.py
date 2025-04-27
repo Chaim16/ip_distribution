@@ -10,7 +10,8 @@ class User(AbstractUser):
     phone = models.CharField(max_length=32, null=True)
     is_ban = models.IntegerField(default=0)
     role = models.CharField(max_length=20)
-    balance = models.FloatField(default=0.00)
+    department_id = models.IntegerField(null=True),
+    workstation_id = models.IntegerField(null=True)
 
     class Meta:
         db_table = 'user'
@@ -18,94 +19,78 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
 
-class WalletOrder(models.Model):
-    """钱包充值订单表"""
 
+class Department(models.Model):
     id = models.BigAutoField(primary_key=True)
-    order_uuid = models.CharField(max_length=36)
-    user_id = models.BigIntegerField()
-    status = models.CharField(max_length=20)
-    amount = models.FloatField()
-    seller_id = models.CharField(max_length=64)
-    buyer_id = models.CharField(max_length=64)
-    create_time = models.BigIntegerField()
-    received_time = models.BigIntegerField()
+    name = models.CharField(max_length=255, verbose_name="部门名称")
+    code = models.CharField(max_length=50, verbose_name="部门编码")
+    manager_id = models.IntegerField(null=True, verbose_name="部门负责人ID")
 
     class Meta:
-        db_table = 'wallet_order'
+        db_table = 'department'
+
+    def __str__(self):
+        return self.name
 
 
-class Order(models.Model):
-    """购买画稿订单表"""
-
+class Router(models.Model):
     id = models.BigAutoField(primary_key=True)
-    order_uuid = models.CharField(max_length=64)
-    user_id = models.BigIntegerField()
-    amount = models.FloatField()
-    status = models.CharField(max_length=20)
-    draft_id = models.BigIntegerField()
-    create_time = models.BigIntegerField()
-    is_cancel = models.IntegerField()
-    cancel_time = models.BigIntegerField()
+    name = models.CharField(max_length=255, verbose_name="路由器名称")
 
     class Meta:
-        db_table = 'order'
+        db_table = 'router'
+
+    def __str__(self):
+        return self.name
 
 
-class Category(models.Model):
-
+class RouterPort(models.Model):
     id = models.BigAutoField(primary_key=True)
-    name = models.CharField(max_length=64)
-    description = models.CharField(max_length=1024)
-
-
-class Draft(models.Model):
-
-    id = models.BigAutoField(primary_key=True)
-    title = models.CharField(max_length=64)
-    description = models.CharField(max_length=1024)
-    image_name = models.CharField(max_length=128)
-    image_url = models.CharField(max_length=2048)
-    price = models.FloatField()
-    category_id = models.BigIntegerField()
-    designer_id = models.BigIntegerField()
-    status = models.CharField(max_length=20)
-    online_time = models.BigIntegerField()
-    is_outline = models.IntegerField(default=0)
+    router_id = models.IntegerField(null=True, verbose_name="所属路由器ID")
+    code = models.IntegerField(verbose_name="端口编号")
+    dns = models.CharField(max_length=50, verbose_name="DNS地址")
+    network_segment = models.CharField(max_length=50, verbose_name="网段")
+    gateway = models.CharField(max_length=50, verbose_name="网关地址")
 
     class Meta:
-        db_table = 'ip_distribution'
+        db_table = 'router_port'
+
+    def __str__(self):
+        return self.code
 
 
-class Browse(models.Model):
-
+class Switch(models.Model):
     id = models.BigAutoField(primary_key=True)
-    user_id = models.BigIntegerField()
-    draft_id = models.BigIntegerField()
+    name = models.CharField(max_length=255, verbose_name="交换机名称")
+    code = models.CharField(max_length=50, verbose_name="交换机编码")
+    router_port_id = models.IntegerField(null=True, verbose_name="关联路由器端口ID")
+    department_id = models.IntegerField(null=True, verbose_name="所属部门ID")
 
     class Meta:
-        db_table = 'browse'
+        db_table = 'switch'
+
+    def __str__(self):
+        return self.name
 
 
-class Crawler(models.Model):
+class SwitchPort(models.Model):
     id = models.BigAutoField(primary_key=True)
-    title = models.CharField(max_length=64)
-    description = models.CharField(max_length=1024)
-    image_path = models.CharField(max_length=2048)
+    switch_id = models.IntegerField(null=True, verbose_name="所属交换机ID")
+    code = models.IntegerField(verbose_name="端口编号")
+    ip_addr = models.CharField(max_length=50, null=True, blank=True, verbose_name="IP地址")
 
     class Meta:
-        db_table = 'crawler'
+        db_table = 'switch_port'
 
 
-class DesignerApplicationRecord(models.Model):
-
+class Workstation(models.Model):
     id = models.BigAutoField(primary_key=True)
-    user_id = models.BigIntegerField()
-    reason = models.CharField(max_length=256)
-    status = models.CharField(max_length=20)
-    approval_opinions = models.CharField(max_length=256)
-    approval_time = models.BigIntegerField()
-    create_time = models.BigIntegerField()
+    code = models.CharField(max_length=50, verbose_name="工位编码")
+    department_id = models.IntegerField(null=True, verbose_name="所属部门ID")
+    switch_port_id = models.IntegerField(null=True, verbose_name="关联交换机端口ID")
 
     class Meta:
-        db_table = 'designer_application_record'
+        db_table = 'workstation'
+
+    def __str__(self):
+        return self.code
