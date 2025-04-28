@@ -30,13 +30,9 @@ class RouterViewSet(viewsets.ViewSet):
         location = params.get("location")
         port_num = params.get("port_num")
         username = request.user.username
-        try:
-            router_model = RouterModel()
-            router_model.add(name, model, location, port_num, username)
-            return setResult()
-        except Exception as e:
-            logger.error("新增路由器失败:{}".format(traceback.format_exc()))
-            raise BusinessException("新增路由器失败")
+        router_model = RouterModel()
+        router_model.add(name, model, location, port_num, username)
+        return setResult()
 
     @action(methods=['GET'], detail=False)
     @swagger_auto_schema(
@@ -49,13 +45,9 @@ class RouterViewSet(viewsets.ViewSet):
             return setResult({}, "用户未登录", 1)
         params = TransCoding().transcoding_dict(dict(request.GET.items()))
         router_id = params.get("id")
-        try:
-            router_model = RouterModel()
-            data = router_model.detail(router_id)
-            return setResult(data)
-        except Exception as e:
-            logger.error("查看路由器详情失败:{}".format(traceback.format_exc()))
-            raise BusinessException("查看路由器详情失败")
+        router_model = RouterModel()
+        data = router_model.detail(router_id)
+        return setResult(data)
 
     @action(methods=['POST'], detail=False)
     @swagger_auto_schema(
@@ -73,13 +65,10 @@ class RouterViewSet(viewsets.ViewSet):
         model = params.get("model")
         location = params.get("location")
         port_num = params.get("port_num")
-        try:
-            router_model = RouterModel()
-            router_model.modify(router_id, name, model, location, port_num)
-            return setResult()
-        except Exception as e:
-            logger.error("编辑路由器失败:{}".format(traceback.format_exc()))
-            raise BusinessException("编辑路由器失败")
+        router_model = RouterModel()
+        router_model.modify(router_id, name, model, location, port_num)
+        return setResult()
+
     @action(methods=['GET'], detail=False)
     @swagger_auto_schema(
         operation_description="路由器列表",
@@ -94,12 +83,8 @@ class RouterViewSet(viewsets.ViewSet):
         page = int(params.get('page', 1))
         size = int(params.get('size', 10))
         router_model = RouterModel()
-        try:
-            data = router_model.router_list(page, size)
-            return setResult(data)
-        except Exception as e:
-            logger.error("获取路由器列表失败：{}".format(traceback.format_exc()))
-            raise BusinessException("获取路由器列表失败")
+        data = router_model.router_list(page, size)
+        return setResult(data)
 
     @action(methods=['POST'], detail=False)
     @swagger_auto_schema(
@@ -114,10 +99,6 @@ class RouterViewSet(viewsets.ViewSet):
         params = json.loads(request.body)
         router_id = params.get("id")
         router_model = RouterModel()
-        try:
-            router_model.del_router(router_id)
-            return setResult()
-        except Exception as e:
-            logger.error("删除用户失败：{}".format(traceback.format_exc()))
-            raise BusinessException("删除用户失败")
+        router_model.del_router(router_id)
+        return setResult()
 
