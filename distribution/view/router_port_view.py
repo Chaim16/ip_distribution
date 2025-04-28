@@ -73,7 +73,7 @@ class RouterPortViewSet(viewsets.ViewSet):
         operation_description="路由器端口列表",
         tags=['路由器管理']
     )
-    def router_list(self, request):
+    def router_port_list(self, request):
         user = request.user
         if not user.is_authenticated:
             return setResult({}, "用户未登录", 1)
