@@ -51,11 +51,15 @@ class Router(models.Model):
 
 class RouterPort(models.Model):
     id = models.BigAutoField(primary_key=True)
+    code = models.CharField(max_length=50, verbose_name="端口编号")
     router_id = models.IntegerField(null=True, verbose_name="所属路由器ID")
-    code = models.IntegerField(verbose_name="端口编号")
-    dns = models.CharField(max_length=50, verbose_name="DNS地址")
-    network_segment = models.CharField(max_length=50, verbose_name="网段")
+    start_addr = models.CharField(max_length=50, verbose_name="起始IP地址")
+    end_addr = models.CharField(max_length=50, verbose_name="结束IP地址")
+    mask = models.CharField(max_length=50, verbose_name="子网掩码")
     gateway = models.CharField(max_length=50, verbose_name="网关地址")
+    dns = models.CharField(max_length=50, verbose_name="DNS地址")
+    create_time = models.BigIntegerField(verbose_name="创建时间")
+    create_user = models.CharField(max_length=50, verbose_name="创建人")
 
     class Meta:
         db_table = 'router_port'
@@ -68,8 +72,12 @@ class Switch(models.Model):
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=255, verbose_name="交换机名称")
     code = models.CharField(max_length=50, verbose_name="交换机编码")
+    model = models.CharField(max_length=255, verbose_name="型号")
+    location = models.CharField(max_length=255, verbose_name="位置")
+    router_id = models.IntegerField(null=True, verbose_name="关联路由器ID")
     router_port_id = models.IntegerField(null=True, verbose_name="关联路由器端口ID")
     department_id = models.IntegerField(null=True, verbose_name="所属部门ID")
+    port_num = models.IntegerField(verbose_name="端口数量")
 
     class Meta:
         db_table = 'switch'

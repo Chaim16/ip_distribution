@@ -88,7 +88,7 @@ DATABASES = {
         'NAME': 'ip_distribution',  # 数据库名
         'USER': 'root',  # MySQL 用户名
         'PASSWORD': 'root',  # MySQL 密码
-        'HOST': '127.0.0.1',  # 数据库地址（本地）
+        'HOST': 'localhost',  # 数据库地址（本地）
         'PORT': '3306',  # 端口号
         'OPTIONS': {
             'charset': 'utf8mb4',  # 推荐使用 utf8mb4 以支持完整的 Unicode
