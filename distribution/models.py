@@ -36,6 +36,11 @@ class Department(models.Model):
 class Router(models.Model):
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=255, verbose_name="路由器名称")
+    model = models.CharField(max_length=255, verbose_name="型号")
+    location = models.CharField(max_length=255, verbose_name="位置")
+    port_num = models.IntegerField(verbose_name="端口数量")
+    create_time = models.BigIntegerField(verbose_name="创建时间")
+    create_user = models.CharField(max_length=255, verbose_name="创建人")
 
     class Meta:
         db_table = 'router'

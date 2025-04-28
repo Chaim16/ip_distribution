@@ -11,8 +11,7 @@ from ip_distribution.utils.log_util import get_logger
 from ip_distribution.utils.response import setResult
 from ip_distribution.utils.validate import TransCoding
 from distribution.service.user_model import UserModel
-from distribution.view.serilazer import RegisterSerializer, UserModifySerializer, ApplyAsDesignerSerializer, \
-    RechargeSerializer, ApproveDesignerApplicationSerializer, UserDeleteSerializer
+from distribution.view.serilazer import RegisterSerializer, UserModifySerializer, UserDeleteSerializer
 
 logger = get_logger("user")
 
@@ -125,50 +124,6 @@ class UserViewSet(viewsets.ViewSet):
             logger.error("获取设计师申请记录失败：{}".format(traceback.format_exc()))
             raise BusinessException("获取设计师申请记录失败")
 
-    @action(methods=['POST'], detail=False)
-    @swagger_auto_schema(
-        operation_description="申请成为设计师",
-        request_body=ApplyAsDesignerSerializer,
-        tags=['用户管理']
-    )
-    def apply_as_designer(self, request):
-        user = request.user
-        if not user.is_authenticated:
-            return setResult({}, "用户未登录", 1)
-
-        params = json.loads(request.body)
-        reason = params.get('reason')
-        username = user.username
-        user_model = UserModel()
-        try:
-            data = user_model.apply_as_designer(username, reason)
-            return setResult(data)
-        except Exception as e:
-            logger.error("申请成为设计师失败：{}".format(traceback.format_exc()))
-            raise BusinessException("申请成为设计师失败")
-
-    @action(methods=['POST'], detail=False)
-    @swagger_auto_schema(
-        operation_description="充值",
-        request_body=RechargeSerializer,
-        tags=['用户管理']
-    )
-    def recharge(self, request):
-        user = request.user
-        if not user.is_authenticated:
-            return setResult({}, "用户未登录", 1)
-        params = json.loads(request.body)
-        amount = params.get('amount')
-        username = user.username
-
-        user_model = UserModel()
-        try:
-            data = user_model.recharge(username, amount)
-            return setResult(data)
-        except Exception as e:
-            logger.error("创建充值订单失败：{}".format(traceback.format_exc()))
-            raise BusinessException("创建充值订单失败")
-
     @action(methods=['GET'], detail=False)
     @swagger_auto_schema(
         operation_description="获取申请设计师列表",
@@ -194,37 +149,9 @@ class UserViewSet(viewsets.ViewSet):
             logger.error("获取申请设计师列表失败：{}".format(traceback.format_exc()))
             raise BusinessException("获取申请设计师列表失败")
 
-    @action(methods=['POST'], detail=False)
-    @swagger_auto_schema(
-        operation_description="充值",
-        request_body=ApproveDesignerApplicationSerializer,
-        tags=['用户管理']
-    )
-    def approve_designer_application(self, request):
-        user = request.user
-        if not user.is_authenticated:
-            return setResult({}, "用户未登录", 1)
-
-        params = json.loads(request.body)
-        record_id = params.get('record_id')
-        status = params.get('status')
-        approval_opinions = params.get('approval_opinions')
-        user_model = UserModel()
-        try:
-            username = user.username
-            user_dict = user_model.detail(username)
-            if user_dict.get('role') != Role.ADMINISTRATOR.value:
-                raise BusinessException("权限不足")
-            user_model.approve_designer_application(record_id, status, approval_opinions)
-            return setResult()
-        except Exception as e:
-            logger.error("审批设计师申请失败：{}".format(traceback.format_exc()))
-            raise BusinessException("审批设计师申请失败")
-
     @action(methods=['GET'], detail=False)
     @swagger_auto_schema(
         operation_description="用户列表",
-        request_body=ApproveDesignerApplicationSerializer,
         tags=['用户管理']
     )
     def user_list(self, request):

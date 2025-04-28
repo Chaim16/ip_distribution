@@ -6,7 +6,7 @@ from django.core.paginator import Paginator
 from django.forms import model_to_dict
 
 from distribution.models import User
-from ip_distribution.utils.constants_util import Role, DesignerApplicationStatus, WalletOrderStatus
+from ip_distribution.utils.constants_util import Role
 from ip_distribution.utils.exception_util import BusinessException
 from ip_distribution.utils.log_util import get_logger
 

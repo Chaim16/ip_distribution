@@ -1,6 +1,5 @@
 from rest_framework import serializers
 
-from ip_distribution.utils.constants_util import DesignerApplicationStatus
 from distribution.models import User
 
 
