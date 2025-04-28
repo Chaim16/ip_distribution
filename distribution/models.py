@@ -10,7 +10,6 @@ class User(AbstractUser):
     phone = models.CharField(max_length=32, null=True)
     is_ban = models.IntegerField(default=0)
     role = models.CharField(max_length=20)
-    department_id = models.IntegerField(null=True),
     workstation_id = models.IntegerField(null=True)
 
     class Meta:
@@ -18,19 +17,6 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
-
-
-class Department(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    name = models.CharField(max_length=255, verbose_name="部门名称")
-    code = models.CharField(max_length=50, verbose_name="部门编码")
-    manager_id = models.IntegerField(null=True, verbose_name="部门负责人ID")
-
-    class Meta:
-        db_table = 'department'
-
-    def __str__(self):
-        return self.name
 
 
 class Router(models.Model):
@@ -76,7 +62,6 @@ class Switch(models.Model):
     location = models.CharField(max_length=255, verbose_name="位置")
     router_id = models.IntegerField(null=True, verbose_name="关联路由器ID")
     router_port_id = models.IntegerField(null=True, verbose_name="关联路由器端口ID")
-    department_id = models.IntegerField(null=True, verbose_name="所属部门ID")
     port_num = models.IntegerField(verbose_name="端口数量")
 
     class Meta:
@@ -99,7 +84,7 @@ class SwitchPort(models.Model):
 class Workstation(models.Model):
     id = models.BigAutoField(primary_key=True)
     code = models.CharField(max_length=50, verbose_name="工位编码")
-    department_id = models.IntegerField(null=True, verbose_name="所属部门ID")
+    location = models.CharField(max_length=255, verbose_name="位置")
     switch_port_id = models.IntegerField(null=True, verbose_name="关联交换机端口ID")
 
     class Meta:

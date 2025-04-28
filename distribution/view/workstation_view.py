@@ -4,76 +4,69 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets
 from rest_framework.decorators import action
 
-from distribution.service.switch_model import SwitchModel
+from distribution.service.workstation_model import WorkstationModel
 from ip_distribution.utils.log_util import get_logger
 from ip_distribution.utils.response import setResult
 from ip_distribution.utils.validate import TransCoding
 
-logger = get_logger("switch")
+logger = get_logger("workstation")
 
 
-class SwitchViewSet(viewsets.ViewSet):
+class WorkstationViewSet(viewsets.ViewSet):
 
     @action(methods=['POST'], detail=False)
     @swagger_auto_schema(
         operation_description="新增",
-        tags=['交换机管理']
+        tags=['工位管理']
     )
     def add(self, request):
         params = json.loads(request.body)
-        name = params.get("name")
-        model = params.get("model")
+        code = params.get("code")
+        switch_port_id = params.get("switch_port_id")
         location = params.get("location")
-        router_id = params.get("router_id")
-        router_port_id = params.get("router_port_id")
-        port_num = params.get("port_num")
-        username = request.user.username
-        switch_model = SwitchModel()
-        switch_model.add(name, model, location, router_id, router_port_id, port_num, username)
+        workstation_model = WorkstationModel()
+        workstation_model.add(code, switch_port_id, location)
         return setResult()
 
     @action(methods=['GET'], detail=False)
     @swagger_auto_schema(
-        operation_description="交换机详情",
-        tags=["交换机管理"],
+        operation_description="详情",
+        tags=["工位管理"],
     )
-    def switch_detail(self, request):
+    def workstation_detail(self, request):
         user = request.user
         if not user.is_authenticated:
             return setResult({}, "用户未登录", 1)
         params = TransCoding().transcoding_dict(dict(request.GET.items()))
         switch_id = params.get("id")
-        switch_model = SwitchModel()
-        data = switch_model.detail(switch_id)
+        workstation_model = WorkstationModel()
+        data = workstation_model.detail(switch_id)
         return setResult(data)
 
     @action(methods=['POST'], detail=False)
     @swagger_auto_schema(
-        operation_description="编辑交换机信息",
-        tags=['交换机管理']
+        operation_description="编辑",
+        tags=['工位管理']
     )
     def modify(self, request):
         user = request.user
         if not user.is_authenticated:
             return setResult({}, "用户未登录", 1)
         params = json.loads(request.body)
-        switch_id = params.get("id")
-        name = params.get("name")
-        model = params.get("model")
+        workstation_id = params.get("id")
+        code = params.get("code")
+        switch_port_id = params.get("switch_port_id")
         location = params.get("location")
-        router_id = params.get("router_id")
-        router_port_id = params.get("router_port_id")
-        port_num = params.get("port_num")
-        switch_model = SwitchModel()
-        switch_model.modify(switch_id, name, model, location, router_id, router_port_id, port_num)
+        workstation_model = WorkstationModel()
+        workstation_model.modify(workstation_id,code, switch_port_id, location)
         return setResult()
 
     @action(methods=['GET'], detail=False)
     @swagger_auto_schema(
-        operation_description="交换机列表",
-        tags=['交换机管理']
+        operation_description="列表",
+        tags=['工位管理']
     )
-    def switch_list(self, request):
+    def workstation_list(self, request):
         user = request.user
         if not user.is_authenticated:
             return setResult({}, "用户未登录", 1)
@@ -81,23 +74,23 @@ class SwitchViewSet(viewsets.ViewSet):
         params = TransCoding().transcoding_dict(dict(request.GET.items()))
         page = int(params.get('page', 1))
         size = int(params.get('size', 10))
-        switch_model = SwitchModel()
-        data = switch_model.switch_list(page, size)
+        workstation_model = WorkstationModel()
+        data = workstation_model.workstation_list(page, size)
         return setResult(data)
 
     @action(methods=['POST'], detail=False)
     @swagger_auto_schema(
-        operation_description="删除路由器端口",
-        tags=['交换机管理']
+        operation_description="删除",
+        tags=['工位管理']
     )
-    def del_switch(self, request):
+    def del_workstation(self, request):
         user = request.user
         if not user.is_authenticated:
             return setResult({}, "用户未登录", 1)
 
         params = json.loads(request.body)
-        switch_id = params.get("id")
-        switch_model = SwitchModel()
-        switch_model.del_switch(switch_id)
+        workstation_id = params.get("id")
+        workstation_model = WorkstationModel()
+        workstation_model.del_workstation(workstation_id)
         return setResult()
 

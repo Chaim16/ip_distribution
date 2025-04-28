@@ -12,7 +12,7 @@ logger = get_logger("user")
 
 class SwitchModel(object):
 
-    def add(self, name, model, location, router_id, router_port_id, department_id, port_num, username):
+    def add(self, name, model, location, router_id, router_port_id, port_num, username):
         # 判断交换机名称是否存在
         if Switch.objects.filter(name=name).exists():
             raise BusinessException("路由器名称{}已存在".format(name))
@@ -23,7 +23,6 @@ class SwitchModel(object):
             "location": location,
             "router_id": router_id,
             "router_port_id": router_port_id,
-            "department_id": department_id,
             "port_num": port_num,
             "create_time": int(time.time()),
             "create_user": username,
@@ -48,7 +47,7 @@ class SwitchModel(object):
         switch_info["mask"] = router_port.mask
         return switch_info
 
-    def modify(self, switch_id, name, model, location, router_id, router_port_id, department_id, port_num):
+    def modify(self, switch_id, name, model, location, router_id, router_port_id, port_num):
         modify_params = {}
         if name:
             modify_params["name"] = name
@@ -60,8 +59,6 @@ class SwitchModel(object):
             modify_params["router_id"] = router_id
         if router_port_id:
             modify_params["router_port_id"] = router_port_id
-        if department_id:
-            modify_params["department_id"] = department_id
         if port_num:
             modify_params["port_num"] = port_num
         logger.info("修改交换机信息：{}".format(modify_params))

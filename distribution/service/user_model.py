@@ -48,7 +48,6 @@ class UserModel(object):
             "gender": user.gender,
             "phone": user.phone,
             "role": user.role,
-            "balance": user.balance,
         }
         return user_dict
 
@@ -92,7 +91,6 @@ class UserModel(object):
                 "gender": item.gender,
                 "phone": item.phone,
                 "role": item.role,
-                "balance": item.balance,
             })
         return {"count": count, "list": data_list}
 
