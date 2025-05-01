@@ -87,6 +87,7 @@ class Workstation(models.Model):
     id = models.BigAutoField(primary_key=True)
     code = models.CharField(max_length=50, verbose_name="工位编码")
     location = models.CharField(max_length=255, verbose_name="位置")
+    switch_id = models.IntegerField(null=True, verbose_name="关联交换机ID")
     switch_port_id = models.IntegerField(null=True, verbose_name="关联交换机端口ID")
 
     class Meta:

@@ -22,10 +22,11 @@ class WorkstationViewSet(viewsets.ViewSet):
     def add(self, request):
         params = json.loads(request.body)
         code = params.get("code")
-        switch_port_id = params.get("switch_port_id")
+        switch_id = params.get("switch_id")
         location = params.get("location")
+        distributed_ip_addr = params.get("distributed_ip_addr")
         workstation_model = WorkstationModel()
-        workstation_model.add(code, switch_port_id, location)
+        workstation_model.add(code, location, switch_id, distributed_ip_addr)
         return setResult()
 
     @action(methods=['GET'], detail=False)
@@ -55,10 +56,11 @@ class WorkstationViewSet(viewsets.ViewSet):
         params = json.loads(request.body)
         workstation_id = params.get("id")
         code = params.get("code")
-        switch_port_id = params.get("switch_port_id")
+        switch_id = params.get("switch_id")
         location = params.get("location")
+        distributed_ip_addr = params.get("distributed_ip_addr")
         workstation_model = WorkstationModel()
-        workstation_model.modify(workstation_id,code, switch_port_id, location)
+        workstation_model.modify(workstation_id, code, location, switch_id, distributed_ip_addr)
         return setResult()
 
     @action(methods=['GET'], detail=False)
@@ -94,3 +96,18 @@ class WorkstationViewSet(viewsets.ViewSet):
         workstation_model.del_workstation(workstation_id)
         return setResult()
 
+    @action(methods=['POST'], detail=False)
+    @swagger_auto_schema(
+        operation_description="分配地址",
+        tags=['工位管理']
+    )
+    def distribute(self, request):
+        user = request.user
+        if not user.is_authenticated:
+            return setResult({}, "用户未登录", 1)
+
+        params = json.loads(request.body)
+        switch_id = params.get("switch_id")
+        workstation_model = WorkstationModel()
+        data = workstation_model.distribute(switch_id)
+        return setResult(data)
