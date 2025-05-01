@@ -22,6 +22,7 @@ class SwitchViewSet(viewsets.ViewSet):
     def add(self, request):
         params = json.loads(request.body)
         name = params.get("name")
+        code = params.get("code")
         model = params.get("model")
         location = params.get("location")
         router_id = params.get("router_id")
@@ -29,7 +30,7 @@ class SwitchViewSet(viewsets.ViewSet):
         port_num = params.get("port_num")
         username = request.user.username
         switch_model = SwitchModel()
-        switch_model.add(name, model, location, router_id, router_port_id, port_num, username)
+        switch_model.add(name, code, model, location, router_id, router_port_id, port_num, username)
         return setResult()
 
     @action(methods=['GET'], detail=False)
@@ -58,6 +59,7 @@ class SwitchViewSet(viewsets.ViewSet):
             return setResult({}, "用户未登录", 1)
         params = json.loads(request.body)
         switch_id = params.get("id")
+        code = params.get("code")
         name = params.get("name")
         model = params.get("model")
         location = params.get("location")
@@ -65,7 +67,7 @@ class SwitchViewSet(viewsets.ViewSet):
         router_port_id = params.get("router_port_id")
         port_num = params.get("port_num")
         switch_model = SwitchModel()
-        switch_model.modify(switch_id, name, model, location, router_id, router_port_id, port_num)
+        switch_model.modify(switch_id, name, code, model, location, router_id, router_port_id, port_num)
         return setResult()
 
     @action(methods=['GET'], detail=False)

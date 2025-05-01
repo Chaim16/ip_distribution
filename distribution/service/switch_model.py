@@ -12,13 +12,14 @@ logger = get_logger("user")
 
 class SwitchModel(object):
 
-    def add(self, name, model, location, router_id, router_port_id, port_num, username):
+    def add(self, name, code, model, location, router_id, router_port_id, port_num, username):
         # 判断交换机名称是否存在
         if Switch.objects.filter(name=name).exists():
             raise BusinessException("路由器名称{}已存在".format(name))
 
         add_params = {
             "name": name,
+            "code": code,
             "model": model,
             "location": location,
             "router_id": router_id,
@@ -34,8 +35,9 @@ class SwitchModel(object):
     def detail(self, switch_id):
         switch = Switch.objects.get(id=switch_id)
         switch_info = model_to_dict(switch)
+        logger.info("获取交换机信息：{}".format(switch_info))
 
-        router = Router.objects.get(switch.router_id)
+        router = Router.objects.get(id=switch.router_id)
         router_port = RouterPort.objects.get(id=switch.router_port_id)
 
         switch_info["router_name"] = router.name
@@ -47,10 +49,12 @@ class SwitchModel(object):
         switch_info["mask"] = router_port.mask
         return switch_info
 
-    def modify(self, switch_id, name, model, location, router_id, router_port_id, port_num):
+    def modify(self, switch_id, name, code, model, location, router_id, router_port_id, port_num):
         modify_params = {}
         if name:
             modify_params["name"] = name
+        if code:
+            modify_params["code"] = code
         if model:
             modify_params["model"] = model
         if location:
@@ -99,6 +103,7 @@ class SwitchModel(object):
             obj["dns"] = router_port.get("dns")
             obj["gateway"] = router_port.get("gateway")
             obj["mask"] = router_port.get("mask")
+            data_list.append(obj)
 
         return {"count": count, "list": data_list}
 

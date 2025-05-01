@@ -63,6 +63,8 @@ class Switch(models.Model):
     router_id = models.IntegerField(null=True, verbose_name="关联路由器ID")
     router_port_id = models.IntegerField(null=True, verbose_name="关联路由器端口ID")
     port_num = models.IntegerField(verbose_name="端口数量")
+    create_time = models.BigIntegerField(verbose_name="创建时间")
+    create_user = models.CharField(max_length=255, verbose_name="创建人")
 
     class Meta:
         db_table = 'switch'
