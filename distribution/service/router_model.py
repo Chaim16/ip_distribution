@@ -3,7 +3,7 @@ import time
 from django.core.paginator import Paginator
 from django.forms import model_to_dict
 
-from distribution.models import Router, RouterPort
+from distribution.models import Router, RouterPort, Switch
 from ip_distribution.utils.exception_util import BusinessException
 from ip_distribution.utils.log_util import get_logger
 
@@ -93,6 +93,8 @@ class RouterModel(object):
         return {"count": count, "list": data_list}
 
     def del_router(self, router_id):
+        if Switch.objects.filter(router_id=router_id).exists():
+            raise BusinessException("路由器下存在关联的交换机，不能删除")
         router = Router.objects.get(id=router_id)
         router.delete()
         logger.info("已删除路由器：{}".format(router))
