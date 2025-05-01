@@ -26,8 +26,18 @@ class RouterModel(object):
             "create_user": username,
         }
         logger.info("添加路由器信息：{}".format(add_params))
-        Router.objects.create(**add_params)
-        logger.info("添加路由器成功：{}".format(username))
+        router = Router.objects.create(**add_params)
+        # 保存端口
+        ports = []
+        for item in range(port_num):
+            port = RouterPort()
+            port.code = "G/{}".format(item)
+            port.router_id = router.id
+            port.create_time = int(time.time())
+            port.create_user = username
+            ports.append(port)
+        RouterPort.objects.bulk_create(ports)
+        logger.info("添加路由器成功：{}, port_list:{}".format(add_params, ports))
 
     def detail(self, router_id):
         router = Router.objects.get(id=router_id)
@@ -124,15 +134,16 @@ class RouterPortModel(object):
 
     def detail(self, port_id):
         router_port = RouterPort.objects.get(id=port_id)
+        logger.info("获取路由器端口信息：{}".format(router_port))
         router = Router.objects.get(id=router_port.router_id)
         router_port_info = model_to_dict(router_port)
         router_port_info["router_name"] = router.name
         return router_port_info
 
-    def router_port_list(self, router_id_list, page, size, **kwargs):
+    def router_port_list(self, router_id, page, size, **kwargs):
         router_port_list = RouterPort.objects.all().order_by("-id")
-        if router_id_list:
-            router_port_list = router_port_list.filter(router_id__in=router_id_list)
+        if router_id:
+            router_port_list = router_port_list.filter(router_id=router_id)
 
         router_map = {}
         router_all = Router.objects.all()
@@ -145,6 +156,8 @@ class RouterPortModel(object):
         data_list = []
         for item in router_port_list:
             data_list.append({
+                "id": item.id,
+                "code": item.code,
                 "router_name": router_map.get(item.router_id),
                 "router_id": item.router_id,
                 "start_addr": item.start_addr,

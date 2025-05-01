@@ -81,9 +81,9 @@ class RouterPortViewSet(viewsets.ViewSet):
         params = TransCoding().transcoding_dict(dict(request.GET.items()))
         page = int(params.get('page', 1))
         size = int(params.get('size', 10))
-        router_id_list = params.get('router_id_list', [])
+        router_id = params.get('router_id')
         router_port_model = RouterPortModel()
-        data = router_port_model.router_port_list(router_id_list, page, size)
+        data = router_port_model.router_port_list(router_id, page, size)
         return setResult(data)
 
     @action(methods=['POST'], detail=False)
