@@ -97,8 +97,11 @@ class UserModel(object):
     def del_user(self, username):
         user = User.objects.get(username=username)
         # 删除所在的工位
-        workstation = Workstation.objects.filter(user_id=user.id)
-        logger.info("删除用户工位：{}".format(workstation))
+        workstation_exists = Workstation.objects.filter(user_id=user.id).exists()
+        if workstation_exists:
+            workstation = Workstation.objects.get(user_id=user.id)
+            workstation.user_id = None
+            workstation.save()
 
         user.delete()
         logger.info("已删除用户：{}".format(username))

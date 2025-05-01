@@ -39,15 +39,19 @@ class WorkstationModel(object):
         switch_port = SwitchPort.objects.get(id=workstation.switch_port_id)
         switch = Switch.objects.get(id=switch_port.switch_id)
         router_port = RouterPort.objects.get(id=switch.router_port_id)
-        user = User.objects.get(id=workstation.user_id)
+        user_exists = User.objects.filter(id=workstation.user_id).exists()
+        if user_exists:
+            user = model_to_dict(User.objects.get(id=workstation.user_id))
+        else:
+            user = {}
 
         workstation_info["switch_name"] = switch.name
         workstation_info["ip_addr"] = switch_port.ip_addr
         workstation_info["dns"] = router_port.dns
         workstation_info["mask"] = router_port.mask
         workstation_info["gateway"] = router_port.gateway
-        workstation_info["user_nickname"] = user.nickname
-        workstation_info["user_id"] = user.id
+        workstation_info["user_nickname"] = user.get("nickname", "")
+        workstation_info["user_id"] = user.get("id", None)
         return workstation_info
 
     def modify(self, workstation_id, code, location, switch_id, distributed_ip_addr, user_id):
@@ -115,16 +119,16 @@ class WorkstationModel(object):
             switch_info = switch_map.get(str(obj.get("switch_id")))
             switch_port_info = switch_port_map.get(str(obj.get("switch_port_id")))
             router_port_info = router_port_map.get(str(switch_info.get("router_port_id")))
-            user_info = user_map.get(str(obj.get("user_id")))
+            user_info = user_map.get(str(obj.get("user_id")), {})
 
             obj["switch_name"] = switch_map.get("name")
             obj["ip_addr"] = switch_port_info.get("ip_addr")
             obj["dns"] = router_port_info.get("dns")
             obj["gateway"] = router_port_info.get("gateway")
             obj["mask"] = router_port_info.get("mask")
-            obj["username"] = user_info.get("username")
-            obj["user_id"] = user_info.get("id")
-            obj["user_nickname"] = user_info.get("nickname")
+            obj["username"] = user_info.get("username", "")
+            obj["user_id"] = user_info.get("id", None)
+            obj["user_nickname"] = user_info.get("nickname", "")
             data_list.append(obj)
 
         return {"count": count, "list": data_list}
