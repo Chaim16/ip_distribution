@@ -53,7 +53,6 @@ class RouterModel(object):
         return user_dict
 
     def modify(self, router_id, name, model, location, port_num):
-
         modify_params = {}
         if name:
             modify_params["name"] = name
@@ -146,17 +145,28 @@ class RouterPortModel(object):
         router_port_list = RouterPort.objects.all().order_by("-id")
         if router_id:
             router_port_list = router_port_list.filter(router_id=router_id)
+        # 过滤是否配置的端口
+        if kwargs.get("config") is not None:
+            if kwargs.get("config") == 1:
+                router_port_list = router_port_list.filter(start_addr__isnull=False).exclude(start_addr__exact='')
+            else:
+                router_port_list = router_port_list.filter(start_addr__exact="")
 
         router_map = {}
         router_all = Router.objects.all()
         for item in router_all:
             router_map[item.id] = item.name
 
+        used_port_set = set([item.router_port_id for item in Switch.objects.all()])
+        logger.info("已被使用的端口{}".format(used_port_set))
+
         count = router_port_list.count()
         paginator = Paginator(router_port_list, size)
         router_port_list = paginator.get_page(page)
         data_list = []
         for item in router_port_list:
+            if item.id in used_port_set:
+                continue
             data_list.append({
                 "id": item.id,
                 "code": item.code,
