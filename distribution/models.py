@@ -10,7 +10,6 @@ class User(AbstractUser):
     phone = models.CharField(max_length=32, null=True)
     is_ban = models.IntegerField(default=0)
     role = models.CharField(max_length=20)
-    workstation_id = models.IntegerField(null=True)
 
     class Meta:
         db_table = 'user'
@@ -89,6 +88,7 @@ class Workstation(models.Model):
     location = models.CharField(max_length=255, verbose_name="位置")
     switch_id = models.IntegerField(null=True, verbose_name="关联交换机ID")
     switch_port_id = models.IntegerField(null=True, verbose_name="关联交换机端口ID")
+    user_id = models.IntegerField(null=True, verbose_name="关联用户ID")
 
     class Meta:
         db_table = 'workstation'

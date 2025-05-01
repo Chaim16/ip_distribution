@@ -5,7 +5,7 @@ import uuid
 from django.core.paginator import Paginator
 from django.forms import model_to_dict
 
-from distribution.models import User
+from distribution.models import User, Workstation
 from ip_distribution.utils.constants_util import Role
 from ip_distribution.utils.exception_util import BusinessException
 from ip_distribution.utils.log_util import get_logger
@@ -96,6 +96,10 @@ class UserModel(object):
 
     def del_user(self, username):
         user = User.objects.get(username=username)
+        # 删除所在的工位
+        workstation = Workstation.objects.filter(user_id=user.id)
+        logger.info("删除用户工位：{}".format(workstation))
+
         user.delete()
         logger.info("已删除用户：{}".format(username))
 

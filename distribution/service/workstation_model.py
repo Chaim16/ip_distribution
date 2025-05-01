@@ -4,7 +4,7 @@ import time
 from django.core.paginator import Paginator
 from django.forms import model_to_dict
 
-from distribution.models import Router, RouterPort, Switch, Workstation, SwitchPort
+from distribution.models import Router, RouterPort, Switch, Workstation, SwitchPort, User
 from ip_distribution.utils.exception_util import BusinessException
 from ip_distribution.utils.log_util import get_logger
 
@@ -13,7 +13,7 @@ logger = get_logger("workstation")
 
 class WorkstationModel(object):
 
-    def add(self, code, location, switch_id, distributed_ip_addr):
+    def add(self, code, location, switch_id, distributed_ip_addr, user_id):
         # 创建交换机端口
         add_params = {
             "switch_id": switch_id,
@@ -26,6 +26,7 @@ class WorkstationModel(object):
             "switch_id": switch_id,
             "switch_port_id": switch_port.id,
             "location": location,
+            "user_id": user_id,
         }
         logger.info("添加工位信息：{}".format(add_params))
         Workstation.objects.create(**add_params)
@@ -38,15 +39,18 @@ class WorkstationModel(object):
         switch_port = SwitchPort.objects.get(id=workstation.switch_port_id)
         switch = Switch.objects.get(id=switch_port.switch_id)
         router_port = RouterPort.objects.get(id=switch.router_port_id)
+        user = User.objects.get(id=workstation.user_id)
 
         workstation_info["switch_name"] = switch.name
         workstation_info["ip_addr"] = switch_port.ip_addr
         workstation_info["dns"] = router_port.dns
         workstation_info["mask"] = router_port.mask
         workstation_info["gateway"] = router_port.gateway
+        workstation_info["user_nickname"] = user.nickname
+        workstation_info["user_id"] = user.id
         return workstation_info
 
-    def modify(self, workstation_id, code, location, switch_id, distributed_ip_addr):
+    def modify(self, workstation_id, code, location, switch_id, distributed_ip_addr, user_id):
         modify_params = {}
         # 查出并删除之前关联的交换机端口
         workstation = Workstation.objects.get(id=workstation_id)
@@ -68,7 +72,9 @@ class WorkstationModel(object):
         if location:
             modify_params["location"] = location
         if switch_id:
-            modify_params["location"] = switch_id
+            modify_params["switch_id"] = switch_id
+        if user_id:
+            modify_params["user_id"] = user_id
         logger.info("修改交换机信息：{}".format(modify_params))
         Workstation.objects.filter(id=workstation_id).update(**modify_params)
 
@@ -91,6 +97,10 @@ class WorkstationModel(object):
         router_port_list = RouterPort.objects.all()
         for item in router_port_list:
             router_port_map[str(item.id)] = model_to_dict(item)
+        user_map = {}
+        user_list = User.objects.all()
+        for item in user_list:
+            user_map[str(item.id)] = model_to_dict(item)
 
         logger.debug("交换机信息：{}".format(switch_map))
         logger.debug("交换机端口信息：{}".format(switch_port_map))
@@ -105,12 +115,16 @@ class WorkstationModel(object):
             switch_info = switch_map.get(str(obj.get("switch_id")))
             switch_port_info = switch_port_map.get(str(obj.get("switch_port_id")))
             router_port_info = router_port_map.get(str(switch_info.get("router_port_id")))
+            user_info = user_map.get(str(obj.get("user_id")))
 
             obj["switch_name"] = switch_map.get("name")
             obj["ip_addr"] = switch_port_info.get("ip_addr")
             obj["dns"] = router_port_info.get("dns")
             obj["gateway"] = router_port_info.get("gateway")
             obj["mask"] = router_port_info.get("mask")
+            obj["username"] = user_info.get("username")
+            obj["user_id"] = user_info.get("id")
+            obj["user_nickname"] = user_info.get("nickname")
             data_list.append(obj)
 
         return {"count": count, "list": data_list}

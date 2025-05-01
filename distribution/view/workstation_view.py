@@ -25,8 +25,9 @@ class WorkstationViewSet(viewsets.ViewSet):
         switch_id = params.get("switch_id")
         location = params.get("location")
         distributed_ip_addr = params.get("distributed_ip_addr")
+        user_id = params.get("user_id")
         workstation_model = WorkstationModel()
-        workstation_model.add(code, location, switch_id, distributed_ip_addr)
+        workstation_model.add(code, location, switch_id, distributed_ip_addr, user_id)
         return setResult()
 
     @action(methods=['GET'], detail=False)
@@ -59,8 +60,9 @@ class WorkstationViewSet(viewsets.ViewSet):
         switch_id = params.get("switch_id")
         location = params.get("location")
         distributed_ip_addr = params.get("distributed_ip_addr")
+        user_id = params.get("user_id")
         workstation_model = WorkstationModel()
-        workstation_model.modify(workstation_id, code, location, switch_id, distributed_ip_addr)
+        workstation_model.modify(workstation_id, code, location, switch_id, distributed_ip_addr, user_id)
         return setResult()
 
     @action(methods=['GET'], detail=False)
