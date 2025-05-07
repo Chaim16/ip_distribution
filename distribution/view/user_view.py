@@ -203,3 +203,16 @@ class UserViewSet(viewsets.ViewSet):
             logger.error("删除用户失败：{}".format(traceback.format_exc()))
             raise BusinessException("删除用户失败")
 
+    @action(methods=['GET'], detail=False)
+    @swagger_auto_schema(
+        operation_description="地址信息",
+        tags=["用户管理"],
+    )
+    def ip_address(self, request):
+        user_model = UserModel()
+        user = request.user
+        if not user.is_authenticated:
+            return setResult({}, "用户未登录", 1)
+        data = user_model.ip_address(user.username)
+        return setResult(data)
+

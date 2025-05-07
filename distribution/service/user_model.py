@@ -6,6 +6,7 @@ from django.core.paginator import Paginator
 from django.forms import model_to_dict
 
 from distribution.models import User, Workstation
+from distribution.service.workstation_model import WorkstationModel
 from ip_distribution.utils.constants_util import Role
 from ip_distribution.utils.exception_util import BusinessException
 from ip_distribution.utils.log_util import get_logger
@@ -106,4 +107,14 @@ class UserModel(object):
         user.delete()
         logger.info("已删除用户：{}".format(username))
 
-
+    def ip_address(self, username):
+        data = {"has_ip_address": False}
+        user = User.objects.get(username=username)
+        workstation = Workstation.objects.filter(user_id=user.id)
+        if not workstation.exists():
+            return data
+        data["has_ip_address"] = True
+        workstation = workstation.first()
+        workstation_info = WorkstationModel().detail(workstation.id)
+        data["workstation_info"] = workstation_info
+        return data
